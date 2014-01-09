@@ -1,0 +1,15 @@
+# 
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "field:product.template,code:"
+msgid "Code"
+msgstr "Codi"
+
+msgctxt "model:ir.action,name:wizard_product_by_location"
+msgid "Product by Locations"
+msgstr "Producte per ubicacions"
+
+msgctxt "model:ir.action,name:wizard_product_quantities_warehouse"
+msgid "Product Quantities By Warehouse"
+msgstr "Unitats de producte per magatzem"
