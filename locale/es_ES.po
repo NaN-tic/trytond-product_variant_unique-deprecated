@@ -2,6 +2,10 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
 
+msgctxt "error:product.product:"
+msgid "The Template of the Product Variant must be unique."
+msgstr "La Plantilla en las Variantes de producte debe ser única."
+
 msgctxt "field:product.template,code:"
 msgid "Code"
 msgstr "Código"

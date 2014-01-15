@@ -1,9 +1,5 @@
 # The COPYRIGHT file at the top level of this repository contains the full
 # copyright notices and license terms.
-import logging
-from sql import Literal
-from sql.aggregate import Count
-
 from trytond.model import fields
 from trytond.pool import Pool, PoolMeta
 from trytond.transaction import Transaction
@@ -45,7 +41,7 @@ class Template:
         for template in templates:
             if template.products:
                 products.append(template.products[0])
-            else:
+            elif value:
                 new_product = Product(template=template, code=value)
                 new_product.save()
         if products:
@@ -64,21 +60,10 @@ class Product:
     @classmethod
     def __setup__(cls):
         super(Product, cls).__setup__()
-
-        cursor = Transaction().cursor
-        sql_table = cls.__table__()
-        cursor.execute(*sql_table.select(sql_table.template, Count(Literal(1)),
-                group_by=sql_table.template, having=Count(Literal(1)) > 1))
-        if cursor.fetchone():
-            logging.getLogger('product_variant_unique').warning(
-                "There are templates with more than one variant. Please, "
-                "remove these variants or split in different templates and "
-                "update this module.")
-        else:
-            cls._sql_constraints += [
-                ('template_uniq', 'UNIQUE (template)',
-                    'The Template of the Product Variant must be unique.'),
-                ]
+        cls._sql_constraints += [
+            ('template_uniq', 'UNIQUE (template)',
+                'The Template of the Product Variant must be unique.'),
+            ]
 
 
 class ProductByLocation:
