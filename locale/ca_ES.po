@@ -6,9 +6,23 @@ msgctxt "error:product.product:"
 msgid "The Template of the Product Variant must be unique."
 msgstr "La Plantilla a les Variants de producte ha de ser única."
 
+msgctxt "field:product.configuration,unique_variant:"
+msgid "Unique variant"
+msgstr "Variant única"
+
 msgctxt "field:product.template,code:"
 msgid "Code"
 msgstr "Codi"
+
+msgctxt "field:product.template,unique_variant:"
+msgid "Unique variant"
+msgstr "Variant única"
+
+msgctxt "help:product.configuration,unique_variant:"
+msgid "Default value for the unique variant field in template form."
+msgstr ""
+"Valor per defecte del camp Variant única en el formulari de plantilles de "
+"producte."
 
 msgctxt "model:ir.action,name:wizard_product_by_location"
 msgid "Product by Locations"
