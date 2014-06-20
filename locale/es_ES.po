@@ -2,9 +2,25 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
 
+msgctxt "error:product.by_location:"
+msgid ""
+"The template \"%s\" must be marked as unique variant in order to be able to "
+"see it's stock"
+msgstr ""
+"La plantilla \"%s\" debe estar marcada como variante única para poder "
+"consultar su estoc."
+
 msgctxt "error:product.product:"
 msgid "The Template of the Product Variant must be unique."
 msgstr "La Plantilla en las Variantes de producte debe ser única."
+
+msgctxt "error:stock.product_quantities_warehouse:"
+msgid ""
+"The template \"%s\" must be marked as unique variant in order to be able to "
+"see it's stock"
+msgstr ""
+"La plantilla \"%s\" debe estar marcada como variante única para poder "
+"consultar su estoc."
 
 msgctxt "field:product.configuration,unique_variant:"
 msgid "Unique variant"
