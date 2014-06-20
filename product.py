@@ -102,7 +102,7 @@ class Product:
 
     @classmethod
     def validate_unique_template(cls, products):
-        unique_products = [p for p in products if p.unique_variant]
+        unique_products = list(set(p for p in products if p.unique_variant))
         templates = [p.template.id for p in unique_products]
         if len(set(templates)) != len(templates):
             cls.raise_user_error('template_uniq')
