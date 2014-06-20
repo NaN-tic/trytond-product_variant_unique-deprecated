@@ -116,13 +116,34 @@ class Product:
 class ProductByLocation:
     __name__ = 'product.by_location'
 
+    @classmethod
+    def __setup__(cls):
+        super(ProductByLocation, cls).__setup__()
+        cls._error_messages.update({
+                'not_unique_variant': ('The template "%s" must be marked as '
+                    'unique variant in order to be able to see it\'s stock'),
+                })
+
+    def default_start(self, fields):
+        Template = Pool().get('product.template')
+        try:
+            res = super(ProductByLocation, self).default_start(fields)
+        except AttributeError:
+            res = {}
+        context = Transaction().context
+        if context['active_model'] == 'product.template':
+            template = Template(context['active_id'])
+            if not template.unique_variant:
+                self.raise_user_error('not_unique_variant', template.rec_name)
+        return res
+
     def do_open(self, action):
         Template = Pool().get('product.template')
 
         context = Transaction().context
         if context['active_model'] == 'product.template':
             template = Template(context['active_id'])
-            if not template.unique_variant or not template.products:
+            if not template.products:
                 return None, {}
             product_id = template.products[0].id
             new_context = {
@@ -138,13 +159,35 @@ class ProductByLocation:
 class OpenProductQuantitiesByWarehouse:
     __name__ = 'stock.product_quantities_warehouse'
 
+    @classmethod
+    def __setup__(cls):
+        super(OpenProductQuantitiesByWarehouse, cls).__setup__()
+        cls._error_messages.update({
+                'not_unique_variant': ('The template "%s" must be marked as '
+                    'unique variant in order to be able to see it\'s stock'),
+                })
+
+    def default_start(self, fields):
+        Template = Pool().get('product.template')
+        try:
+            res = super(OpenProductQuantitiesByWarehouse, self).default_start(
+                fields)
+        except AttributeError:
+            res = {}
+        context = Transaction().context
+        if context['active_model'] == 'product.template':
+            template = Template(context['active_id'])
+            if not template.unique_variant:
+                self.raise_user_error('not_unique_variant', template.rec_name)
+        return res
+
     def do_open_(self, action):
         Template = Pool().get('product.template')
 
         context = Transaction().context
         if context['active_model'] == 'product.template':
             template = Template(context['active_id'])
-            if not template.unique_variant or not template.products:
+            if not template.products:
                 return None, {}
             product_id = template.products[0].id
             new_context = {
