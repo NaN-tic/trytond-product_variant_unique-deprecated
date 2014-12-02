@@ -71,6 +71,22 @@ class Template:
             ('unique_variant', '=', True),
             ('products.code',) + tuple(clause[1:])]
 
+    @staticmethod
+    def order_code(tables):
+        pool = Pool()
+        Product = pool.get('product.product')
+        table, _ = tables[None]
+        product_table = tables.get('product')
+        if product_table is None:
+            product = Product.__table__()
+            product_table = {
+                None: (product, (product.template == table.id) &
+                    table.unique_variant),
+                }
+            tables['product'] = product_table
+        table, _ = product_table[None]
+        return [table.code]
+
     @classmethod
     def validate(cls, templates):
         pool = Pool()
