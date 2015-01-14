@@ -27,7 +27,7 @@ class Template:
     @classmethod
     def __setup__(cls):
         super(Template, cls).__setup__()
-        cls.products.size = If(Eval('unique_variant', False), 1, 999999999999)
+        cls.products.size = If(Eval('unique_variant', False), 1, 9999999)
 
     @staticmethod
     def default_unique_variant():
