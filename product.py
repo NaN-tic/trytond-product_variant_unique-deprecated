@@ -1,5 +1,6 @@
 # The COPYRIGHT file at the top level of this repository contains the full
 # copyright notices and license terms.
+from trytond.const import OPERATORS
 from trytond.model import fields
 from trytond.pool import Pool, PoolMeta
 from trytond.pyson import If, Eval
@@ -44,7 +45,8 @@ class Template:
 
     def get_code(self, name):
         if self.unique_variant:
-            return self.products and self.products[0].code or None
+            with Transaction().set_context(active_test=False):
+                return self.products and self.products[0].code or None
 
     @classmethod
     def set_code(cls, templates, name, value):
@@ -54,12 +56,13 @@ class Template:
         for template in templates:
             if not template.unique_variant:
                 continue
-            if template.products:
-                products.add(template.products[0])
-            elif value:
-                new_product = Product(template=template)
-                new_product.save()
-                products.add(new_product)
+            with Transaction().set_context(active_test=False):
+                if template.products:
+                    products.add(template.products[0])
+                elif value:
+                    new_product = Product(template=template)
+                    new_product.save()
+                    products.add(new_product)
         if products:
             Product.write(list(products), {
                     'code': value,
@@ -69,7 +72,8 @@ class Template:
     def search_code(cls, name, clause):
         return [
             ('unique_variant', '=', True),
-            ('products.code',) + tuple(clause[1:])]
+            ('products.code',) + tuple(clause[1:]),
+            ]
 
     @staticmethod
     def order_code(tables):
@@ -99,17 +103,102 @@ class Template:
             Product.validate_unique_template(products)
         super(Template, cls).validate(templates)
 
+    @classmethod
+    def search_domain(cls, domain, active_test=True):
+        def find_active_code(domain):
+            active_found = code_found = False
+            for arg in domain:
+                if (isinstance(arg, (tuple, list)) and len(arg) == 3
+                        and (tuple(arg) == ('active', '=', False)
+                            or (arg[0] == 'active' and arg[1] == 'in'
+                                and False in arg[2]))):
+                    active_found = True
+                elif (isinstance(arg, tuple)
+                        or (isinstance(arg, list)
+                            and len(arg) > 2
+                            and arg[1] in OPERATORS)):
+                    if arg[0] in ('code', 'rec_name'):
+                        code_found = True
+                elif isinstance(arg, list):
+                    active_found_rec, code_found_rec = find_active_code(arg)
+                    active_found |= active_found_rec
+                    code_found |= code_found_rec
+                if active_found and code_found:
+                    break
+            return active_found, code_found
+
+        active_found, code_found = find_active_code(domain)
+        with Transaction().set_context(
+                search_inactive_products=(active_found and code_found)):
+            return super(Template, cls).search_domain(domain,
+                active_test=active_test)
+
+    @classmethod
+    def write(cls, *args):
+        pool = Pool()
+        Product = pool.get('product.product')
+
+        to_active_products = []
+        to_deactive_products = []
+        actions = iter(args)
+        for templates, values in zip(actions, actions):
+            if 'active' in values:
+                for template in templates:
+                    if template.unique_variant:
+                        with Transaction().set_context(active_test=False):
+                            if values['active']:
+                                to_active_products += [p
+                                    for p in template.products if not p.active]
+                            else:
+                                to_deactive_products += [p
+                                    for p in template.products if p.active]
+        super(Template, cls).write(*args)
+
+        product_args = []
+        if to_active_products:
+            product_args.extend((to_active_products, {'active': True}))
+        if to_deactive_products:
+            product_args.extend((to_deactive_products, {'active': False}))
+        if product_args:
+            Product.write(*product_args)
+
 
 class Product:
     __name__ = 'product.product'
 
+    unique_variant = fields.Function(fields.Boolean('Unique variant'),
+        'on_change_with_unique_variant', searcher='search_unique_variant')
+
     @classmethod
     def __setup__(cls):
         super(Product, cls).__setup__()
+
+        if not cls.active.states:
+            cls.active.states = {}
+        if cls.active.states.get('invisible'):
+            cls.active.states['invisible'] = Or(
+                cls.active.states['invisible'],
+                Eval('unique_variant', False))
+        else:
+            cls.active.states['invisible'] = Eval('unique_variant', False)
+        if 'unique_variant' not in cls.active.depends:
+            cls.active.depends.append('unique_variant')
+
         cls._error_messages.update({
                 'template_uniq': ('The Template of the Product Variant must '
                     'be unique.'),
                 })
+
+    @fields.depends('template', '_parent_sale.unique_variant')
+    def on_change_with_unique_variant(self, name=None):
+        if self.template:
+            return self.template.unique_variant
+
+    @classmethod
+    def search_unique_variant(cls, name, clause):
+        return [
+            ('template.unique_variant',) + tuple(clause[1:]),
+            ]
 
     @classmethod
     def validate(cls, products):
@@ -127,6 +216,13 @@ class Product:
                     ('template', 'in', templates),
                     ], limit=1):
             cls.raise_user_error('template_uniq')
+
+    @classmethod
+    def search_domain(cls, domain, active_test=True):
+        if Transaction().context.get('search_inactive_products'):
+            active_test = False
+        return super(Product, cls).search_domain(domain,
+            active_test=active_test)
 
 
 class ProductByLocation:
