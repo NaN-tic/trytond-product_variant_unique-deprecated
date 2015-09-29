@@ -104,7 +104,7 @@ class Template:
         super(Template, cls).validate(templates)
 
     @classmethod
-    def search_domain(cls, domain, active_test=True):
+    def search_domain(cls, domain, active_test=True, tables=None):
         def find_active_code(domain):
             active_found = code_found = False
             for arg in domain:
@@ -131,7 +131,7 @@ class Template:
         with Transaction().set_context(
                 search_inactive_products=(active_found and code_found)):
             return super(Template, cls).search_domain(domain,
-                active_test=active_test)
+                active_test=active_test, tables=tables)
 
     @classmethod
     def write(cls, *args):
@@ -218,11 +218,11 @@ class Product:
             cls.raise_user_error('template_uniq')
 
     @classmethod
-    def search_domain(cls, domain, active_test=True):
+    def search_domain(cls, domain, active_test=True, tables=None):
         if Transaction().context.get('search_inactive_products'):
             active_test = False
         return super(Product, cls).search_domain(domain,
-            active_test=active_test)
+            active_test=active_test, tables=tables)
 
 
 class ProductByLocation:
