@@ -3,7 +3,7 @@
 from trytond.const import OPERATORS
 from trytond.model import fields
 from trytond.pool import Pool, PoolMeta
-from trytond.pyson import If, Eval
+from trytond.pyson import If, Or, Eval
 from trytond.transaction import Transaction
 from trytond.modules.product.product import STATES, DEPENDS
 
