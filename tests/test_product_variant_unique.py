@@ -1,32 +1,25 @@
-#!/usr/bin/env python
+# This file is part of the product_variant_unique module for Tryton.
 # The COPYRIGHT file at the top level of this repository contains the full
 # copyright notices and license terms.
 import unittest
 from decimal import Decimal
 import trytond.tests.test_tryton
-from trytond.tests.test_tryton import POOL, DB_NAME, USER, CONTEXT, test_view,\
-    test_depends
-from trytond.exceptions import UserError
+from trytond.tests.test_tryton import ModuleTestCase
+from trytond.tests.test_tryton import POOL, DB_NAME, USER, CONTEXT
 from trytond.transaction import Transaction
+from trytond.exceptions import UserError
 
 
-class TestProductVariantCase(unittest.TestCase):
-    'Test Product Variant module'
+class ProductVariantUniqueTestCase(ModuleTestCase):
+    'Test Product Variant Unique module'
+    module = 'product_variant_unique'
 
     def setUp(self):
-        trytond.tests.test_tryton.install_module('product_variant_unique')
+        super(ProductVariantUniqueTestCase, self).setUp()
         self.template = POOL.get('product.template')
         self.product = POOL.get('product.product')
         self.category = POOL.get('product.category')
         self.uom = POOL.get('product.uom')
-
-    def test0005views(self):
-        'Test views'
-        test_view('product_variant_unique')
-
-    def test0006depends(self):
-        'Test depends'
-        test_depends()
 
     def test0010_unique_variant(self):
         with Transaction().start(DB_NAME, USER, context=CONTEXT):
@@ -108,5 +101,5 @@ class TestProductVariantCase(unittest.TestCase):
 def suite():
     suite = trytond.tests.test_tryton.suite()
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(
-            TestProductVariantCase))
+        ProductVariantUniqueTestCase))
     return suite
