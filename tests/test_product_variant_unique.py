@@ -4,14 +4,15 @@
 import unittest
 from decimal import Decimal
 import trytond.tests.test_tryton
-from trytond.tests.test_tryton import POOL, DB_NAME, USER, CONTEXT, test_view,\
-    test_depends
+from trytond.tests.test_tryton import ModuleTestCase
+from trytond.tests.test_tryton import POOL, DB_NAME, USER, CONTEXT
 from trytond.exceptions import UserError
 from trytond.transaction import Transaction
 
 
-class TestProductVariantCase(unittest.TestCase):
+class TestProductVariantCase(ModuleTestCase):
     'Test Product Variant module'
+    module = 'product_variant_unique'
 
     def setUp(self):
         trytond.tests.test_tryton.install_module('product_variant_unique')
@@ -19,14 +20,6 @@ class TestProductVariantCase(unittest.TestCase):
         self.product = POOL.get('product.product')
         self.category = POOL.get('product.category')
         self.uom = POOL.get('product.uom')
-
-    def test0005views(self):
-        'Test views'
-        test_view('product_variant_unique')
-
-    def test0006depends(self):
-        'Test depends'
-        test_depends()
 
     def test0010_unique_variant(self):
         with Transaction().start(DB_NAME, USER, context=CONTEXT):
