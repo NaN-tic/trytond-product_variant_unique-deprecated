@@ -13,7 +13,8 @@
             <field name="inherit" ref="product.template_view_form"/>
             <field name="name">template_form</field>
         </record>
-
+    </data>
+    <data depends="stock">
         <record model="ir.action.wizard" id="wizard_product_by_location">
             <field name="name">Product by Locations</field>
             <field name="wiz_name">product.by_location</field>
