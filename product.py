@@ -166,39 +166,13 @@ class Template:
 class Product:
     __name__ = 'product.product'
 
-    unique_variant = fields.Function(fields.Boolean('Unique variant'),
-        'on_change_with_unique_variant', searcher='search_unique_variant')
-
     @classmethod
     def __setup__(cls):
         super(Product, cls).__setup__()
-
-        if not cls.active.states:
-            cls.active.states = {}
-        if cls.active.states.get('invisible'):
-            cls.active.states['invisible'] = Or(
-                cls.active.states['invisible'],
-                Eval('unique_variant', False))
-        else:
-            cls.active.states['invisible'] = Eval('unique_variant', False)
-        if 'unique_variant' not in cls.active.depends:
-            cls.active.depends.append('unique_variant')
-
         cls._error_messages.update({
                 'template_uniq': ('The Template of the Product Variant must '
                     'be unique.'),
                 })
-
-    @fields.depends('template', '_parent_sale.unique_variant')
-    def on_change_with_unique_variant(self, name=None):
-        if self.template:
-            return self.template.unique_variant
-
-    @classmethod
-    def search_unique_variant(cls, name, clause):
-        return [
-            ('template.unique_variant',) + tuple(clause[1:]),
-            ]
 
     @classmethod
     def validate(cls, products):

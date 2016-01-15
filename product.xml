@@ -14,6 +14,13 @@
             <field name="name">template_form</field>
         </record>
 
+        <record model="ir.ui.view" id="product_view_tree">
+            <field name="model">product.product</field>
+            <field name="type" eval="None"/>
+            <field name="inherit" ref="product.product_view_tree"/>
+            <field name="name">product_tree</field>
+        </record>
+
         <record model="ir.action.wizard" id="wizard_product_by_location">
             <field name="name">Product by Locations</field>
             <field name="wiz_name">product.by_location</field>
