@@ -22,7 +22,8 @@
             <field name="inherit" ref="product.product_view_tree"/>
             <field name="name">product_tree</field>
         </record>
-
+    </data>
+    <data depends="stock">
         <record model="ir.action.wizard" id="wizard_product_by_location">
             <field name="name">Product by Locations</field>
             <field name="wiz_name">product.by_location</field>
