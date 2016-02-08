@@ -12,7 +12,7 @@ msgstr ""
 
 msgctxt "error:product.product:"
 msgid "The Template of the Product Variant must be unique."
-msgstr "La Plantilla en las Variantes de producte debe ser única."
+msgstr "La Plantilla en las Variantes de producto debe ser única."
 
 msgctxt "field:product.configuration,unique_variant:"
 msgid "Unique variant"
