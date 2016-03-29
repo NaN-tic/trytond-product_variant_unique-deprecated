@@ -9,7 +9,6 @@ from trytond.modules.product.product import STATES, DEPENDS
 
 __all__ = ['Template', 'Product', 'ProductByLocation',
     'OpenProductQuantitiesByWarehouse', 'OpenBOMTree']
-__metaclass__ = PoolMeta
 
 UNIQUE_STATES = STATES.copy()
 UNIQUE_STATES.update({
@@ -18,6 +17,7 @@ UNIQUE_STATES.update({
 
 
 class Template:
+    __metaclass__ = PoolMeta
     __name__ = 'product.template'
 
     unique_variant = fields.Boolean('Unique variant')
@@ -164,6 +164,7 @@ class Template:
 
 
 class Product:
+    __metaclass__ = PoolMeta
     __name__ = 'product.product'
 
     @classmethod
@@ -200,6 +201,7 @@ class Product:
 
 
 class ProductByLocation:
+    __metaclass__ = PoolMeta
     __name__ = 'product.by_location'
 
     @classmethod
@@ -243,6 +245,7 @@ class ProductByLocation:
 
 
 class OpenProductQuantitiesByWarehouse:
+    __metaclass__ = PoolMeta
     __name__ = 'stock.product_quantities_warehouse'
 
     @classmethod
@@ -288,6 +291,7 @@ class OpenProductQuantitiesByWarehouse:
 
 
 class OpenBOMTree:
+    __metaclass__ = PoolMeta
     __name__ = 'production.bom.tree.open'
 
     def default_start(self, fields):
