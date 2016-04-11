@@ -40,8 +40,15 @@ class Template:
 
     @classmethod
     def search_rec_name(cls, name, clause):
-        return ['OR', super(Template, cls).search_rec_name(name, clause),
-            [('code',) + tuple(clause[1:])]]
+        domain = super(Template, cls).search_rec_name(name, clause)
+        if clause[1].startswith('!') or clause[1].startswith('not '):
+            bool_op = 'AND'
+        else:
+            bool_op = 'OR'
+        return [bool_op,
+            domain,
+            ('code',) + tuple(clause[1:]),
+            ]
 
     def get_code(self, name):
         if self.unique_variant:
